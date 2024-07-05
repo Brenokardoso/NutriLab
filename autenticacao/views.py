@@ -1,44 +1,50 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.contrib import messages as msg
+from django.contrib.messages import constants
+from .ultils import validando_campos
+import re
+
+# from django.contrib.auth.decorators import login_required
 
 
 def cadastro(request):
 
-    usuario = request.POST.get("usuario")
-    email = request.POST.get("email")
-    senha = request.POST.get("senha")
-    confirmar_senha = request.POST.get("confirmar_senha")
+    match (request.method):
+        case "GET":
+            return render(request, "cadastro.html")
 
-    print(f"valor de usuario {usuario}")
-    print(f"valor de email {email}")
-    print(f"valor de senha {senha}")
-    print(f"valor de confirmar_senha {confirmar_senha}")
-
-    if (
-        len(
-            User.objects.complex_filter(
-                Q(username=usuario) & Q(email=email) & Q(password=senha)
-            )
-        )
-        == 0
-    ):
-        if senha == confirmar_senha:
+        case "POST":
             try:
-                user = User.objects.create_user(
-                    username=usuario, email=email, password=senha
-                )
-                user.save()
-                return render(request, "cadastro.html?status=200")
+                usuario = request.POST.get("usuario")
+                email = request.POST.get("email")
+                senha = request.POST.get("senha")
+                confirmar_senha = request.POST.get("confirmar_senha")
 
-            except Exception as e:
-                print(f"Houve uma excessão ao salvar os dados por motivos de {e}")
-        else:
-            print("Houve uma excessão ao confirmar a senha")
+                if validando_campos(request, usuario, email, senha, confirmar_senha):
 
-    else:
-        print("Este usuário já existe")
+                    usuarios = User.objects.create_user(
+                        username=usuario,
+                        email=email,
+                        password=senha,
+                        is_active=False,
+                    )
+                    usuarios.save()
+
+                    msg.add_message(
+                        request,
+                        constants.SUCCESS,
+                        "Usuário cadastrado com sucesso",
+                    )
+
+                    print("Usuário cadastrado com sucesso")
+
+                    return render(request, "cadastro.html")
+
+            except Exception as error:
+                print(f"Não foi possível capturar os dados {error}")
 
     return render(request, "cadastro.html")
 

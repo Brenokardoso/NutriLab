@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block 'titulo' %}
-    Login dos usuários
+Login dos usuários
 {% endblock %}
 
 {% block 'conteudo1' %}
@@ -10,6 +10,9 @@
 <center>
     <br>
     <h1>Login</h1>
+    <div>
+        <a type="button" href="{% url 'cadastro' %}">Cadastro</a>
+    </div>
 </center>
 
 {% endblock %}
