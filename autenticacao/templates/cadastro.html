@@ -3,7 +3,7 @@
 
 {% block 'head' %}
 
-<link rel="stylesheet" href="{% static 'autenticacao/css/cadastro.css' %}">
+<link rel="stylesheet" href="{% static 'autenticacao/css/autenticacao.css' %}">
 
 {% endblock %}
 
@@ -50,22 +50,26 @@
                         <input class="form-control input-form" name="email" type="text" placeholder="Digite seu E-mail...">
                         <br>
                         <div class="row">
+
                             <div class="col-md">
                                 <span class="bold">Senha</span>
                                 <input class="form-control input-form" name="senha" type="password" placeholder="Digite sua senha...">
                             </div>
+                            <br>
 
                             <div class="col-md">
                                 <span class="bold">Confirmar senha</span>
                                 <input class="form-control input-form" name="confirmar_senha" type="password" placeholder="Confirme sua senha...">
                             </div>
                         </div>
+
                         <br>
                         <button class="btn-first" type="submit" >Registrar</button>
 
                     </form>
 
-                    <h3 style="position: absolute; bottom: 65px; font-weight: bold">Já possui uma conta ?&nbsp <a class="btn btn-outline-primary btn-lg">Logar</a> </h3>
+                    <h3 style="position: absolute; bottom: 65px; font-weight: bold">Não tem uma conta ?&nbsp <a href="{% url 'login' %}" class="btn btn-outline-success btn-lg">Login</a> </h3>
+
                 </div>
 
             </div>

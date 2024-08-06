@@ -138,3 +138,9 @@ MESSAGE_TAGS = {
     constants.SUCCESS: "alert-success",
     constants.WARNING: "alert-warning",
 }
+
+
+EMAIL_BACKEND = (
+    "django.core.mail.backends.console.EmailBackend"  # smtp por console em produção
+)
+EMAIL_HOST_USER = "brenopositivo@hotmail.com"
