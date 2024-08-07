@@ -6,4 +6,5 @@ urlpatterns = [
     path("", lambda request: redirect("/auth/login/")),
     path("admin/", admin.site.urls),
     path("auth/", include("autenticacao.urls")),
+    path("plataforma/", include("plataforma.urls")),
 ]

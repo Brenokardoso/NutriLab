@@ -28,7 +28,7 @@ def validando_campos_cadastro(request, usuario, email, senha, confirmar_senha):
             msg.add_message(request, constants.ERROR, "Este usuário já existe")
             return False
 
-        if User.objects.get(username=usuario):
+        if User.objects.filter(username=usuario).exists():
             user = User.objects.get(username=usuario)
             if user.is_active == False:
                 msg.add_message(request, constants.ERROR, "usuário não ativado!")

@@ -32,7 +32,7 @@ def cadastro(request):
                 senha = request.POST.get("senha")
                 confirmar_senha = request.POST.get("confirmar_senha")
                 host = request.get_host()
-                
+
                 if validando_campos_cadastro(
                     request, usuario, email, senha, confirmar_senha
                 ):
@@ -89,13 +89,10 @@ def login(request):
             senha = request.POST.get("senha")
 
             user_auth = authenticate(request, username=user, password=senha)
-            # user_login = auth_login(request, user_auth)
 
             if user_auth:
-                msg.add_message(
-                    request, constants.SUCCESS, "Usuário logado com sucesso!"
-                ),
-                return HttpResponse("LOGADO")
+                auth_login(request, user_auth) 
+                return redirect("/plataforma/pacientes")
 
             else:
                 msg.add_message(
@@ -124,8 +121,8 @@ def ativar_conta(request, token):
         msg.add_message(request, constants.WARNING, "Este token já existe")
         return redirect("/auth/login")
     user = User.objects.get(username=token.user.username)
-    user.update(is_active=True)
-    token.update(ativo=True)
+    user.is_active = True
+    token.ativo = True
     user.save()
     token.save()
 

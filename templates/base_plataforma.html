@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block 'conteudo1' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                Lateral
+            </div>
+            <div class="col-md-8">
+                {% block 'plataforma' %}
+                {% endblock %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
