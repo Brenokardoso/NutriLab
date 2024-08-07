@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -9,6 +9,8 @@ from django.contrib.messages import constants
 from .ultils import validando_campos_cadastro, email_html
 import re, os
 from django.conf import settings
+from .models import Ativacao
+from hashlib import sha256
 
 
 # from django.contrib.auth.decorators import login_required
@@ -29,23 +31,31 @@ def cadastro(request):
                 email = request.POST.get("email")
                 senha = request.POST.get("senha")
                 confirmar_senha = request.POST.get("confirmar_senha")
-
+                host = request.get_host()
+                
                 if validando_campos_cadastro(
                     request, usuario, email, senha, confirmar_senha
                 ):
 
-                    usuarios = User.objects.create_user(
+                    user = User.objects.create_user(
                         username=usuario,
                         email=email,
                         password=senha,
                         is_active=False,
                     )
-                    usuarios.save()
+                    token = sha256(f"{usuario}{email}{senha}".encode()).hexdigest()
+                    ativacao = Ativacao(
+                        token=token,
+                        user=user,
+                    )
+                    ativacao.save()
+                    user.save()
 
                     path_template = os.path.join(
                         settings.BASE_DIR,
                         "autenticacao/templates/emails/confirma_cadastro.html",
                     )
+
                     email_html(
                         path_template,
                         "Cadastro confirmado",
@@ -53,6 +63,7 @@ def cadastro(request):
                             email,
                         ],
                         username=usuario,
+                        link_ativacao=f"{host}/auth/ativar_conta/{token}",
                     )
 
                     msg.add_message(
@@ -102,5 +113,21 @@ def login(request):
 def logout(request):
     try:
         request.user.auth_logout()
+        return HttpResponse("Usuário deslogado!")
     except Exception as error:
         print(f"Houve um erro por : {error}")
+
+
+def ativar_conta(request, token):
+    token = get_object_or_404(Ativacao, token=token)
+    if token.ativo:
+        msg.add_message(request, constants.WARNING, "Este token já existe")
+        return redirect("/auth/login")
+    user = User.objects.get(username=token.user.username)
+    user.update(is_active=True)
+    token.update(ativo=True)
+    user.save()
+    token.save()
+
+    msg.add_message(request, constants.SUCCESS, "Usuário ativado com sucesso")
+    return redirect("/auth/login")

@@ -12,47 +12,60 @@ import os
 
 def validando_campos_cadastro(request, usuario, email, senha, confirmar_senha):
 
-    fields = [usuario, email, senha, confirmar_senha]
+    try:
+        fields = [usuario, email, senha, confirmar_senha]
 
-    for field in fields:
-        if field is None:
+        for field in fields:
+            if field is None or field == "":
+                msg.add_message(
+                    request,
+                    constants.ERROR,
+                    "Não deixe nenhum campo em branco",
+                )
+                return False
+
+        if User.objects.complex_filter(Q(username=usuario) | Q(email=email)).exists():
+            msg.add_message(request, constants.ERROR, "Este usuário já existe")
+            return False
+
+        if User.objects.get(username=usuario):
+            user = User.objects.get(username=usuario)
+            if user.is_active == False:
+                msg.add_message(request, constants.ERROR, "usuário não ativado!")
+                return False
+
+        elif len(senha) < 6:
             msg.add_message(
-                request,
-                constants.ERROR,
-                "Não deixe nenhum campo em branco",
+                request, constants.ERROR, "Sua senha tem menos de 8 digitos"
             )
             return False
 
-    if User.objects.complex_filter(Q(username=usuario) | Q(email=email)).exists():
-        msg.add_message(request, constants.ERROR, "Este usuário já existe")
-        return False
+        elif not re.search(r'["A-Z"]', senha):
+            print("erro em upper compile")
+            msg.add_message(
+                request, constants.ERROR, "Sua senha não possuí nenhuma letra maiusculo"
+            )
+            return False
 
-    elif len(senha) < 6:
-        msg.add_message(request, constants.ERROR, "Sua senha tem menos de 8 digitos")
-        return False
+        elif not re.search(r'["a-z"]', senha):
+            msg.add_message(
+                request, constants.ERROR, "Sua senha não possuí nenhuma letra minuscula"
+            )
+            return False
 
-    elif not re.search(r'["A-Z"]', senha):
-        print("erro em upper compile")
-        msg.add_message(
-            request, constants.ERROR, "Sua senha não possuí nenhuma letra maiusculo"
-        )
-        return False
+        elif not re.search(r'["0-9"]', senha):
+            msg.add_message(
+                request, constants.ERROR, "Sua senha não possuí nenhum número"
+            )
+            return False
 
-    elif not re.search(r'["a-z"]', senha):
-        msg.add_message(
-            request, constants.ERROR, "Sua senha não possuí nenhuma letra minuscula"
-        )
-        return False
+        elif senha != confirmar_senha:
+            msg.add_message(request, constants.ERROR, "As senhas são diferentes")
+            return False
 
-    elif not re.search(r'["0-9"]', senha):
-        msg.add_message(request, constants.ERROR, "Sua senha não possuí nenhum número")
-        return False
-
-    elif senha != confirmar_senha:
-        msg.add_message(request, constants.ERROR, "As senhas são diferentes")
-        return False
-
-    return True
+        return True
+    except Exception as error:
+        print(f"Houve um erro por na validação dos campos por motivos de {error}")
 
 
 def email_html(path_template: str, assunto: str, para: list, **kwargs) -> dict:
