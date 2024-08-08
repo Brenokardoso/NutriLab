@@ -1,16 +1,49 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block 'head'%}
+    <link rel="stylesheet" href="{% static 'plataforma/css/css.css' %}">
+{% endblock %}
 
 {% block 'conteudo1' %}
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2">
-                Lateral
-            </div>
+
+                <a href="{% url 'pacientes' %}" class="link-lateral">
+                    <div class="card-lateral">
+                        <img src="{% static 'plataforma/img/paciente.png' %}">
+                        <br>
+                        <br>
+                        <h3> Gerenciar Pacientes </h3>
+                    </div>
+                </a>
+
+                <a href="#" class="link-lateral">
+                    <div class="card-lateral">
+                        <img src="{% static 'plataforma/img/dados_paciente.png' %}">
+                        <br>
+                        <br>
+                        <h3>Dados do Pacientes</h3>
+                    </div>
+                </a>
+
+                <a href="#" class="link-lateral">
+                    <div class="card-lateral">
+                        <img src="{% static 'plataforma/img/plano_alimentar.png' %}">
+                        <br>
+                        <br>
+                        <h3>Plano alimentar</h3>
+                    </div>
+                </a>
+
+        </div>
             <div class="col-md-8">
                 {% block 'plataforma' %}
+                <h1>teste</h1>
                 {% endblock %}
             </div>
-
         </div>
     </div>
 {% endblock %}

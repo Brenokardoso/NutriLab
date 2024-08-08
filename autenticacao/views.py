@@ -13,13 +13,10 @@ from .models import Ativacao
 from hashlib import sha256
 
 
-# from django.contrib.auth.decorators import login_required
-
-
 def cadastro(request):
 
     if request.user.is_authenticated:
-        return HttpResponse(f"Você já está autenticado como o {request.user.username}")
+        return redirect("/plataforma/pacientes")
 
     match (request.method):
         case "GET":
@@ -79,7 +76,7 @@ def cadastro(request):
 
 def login(request):
     if request.user.is_authenticated:
-        return HttpResponse(f"Você já está autenticado como o {request.user.username}")
+        return redirect("/plataforma/pacientes")
 
     if request.method == "GET":
         return render(request, "login.html")
@@ -91,7 +88,7 @@ def login(request):
             user_auth = authenticate(request, username=user, password=senha)
 
             if user_auth:
-                auth_login(request, user_auth) 
+                auth_login(request, user_auth)
                 return redirect("/plataforma/pacientes")
 
             else:
